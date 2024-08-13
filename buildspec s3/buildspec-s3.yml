@@ -1,0 +1,58 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Installing node packages
+      - n 14.16.1
+      - npm i
+  build:
+    commands:
+      - npm run build
+  post_build:
+    commands:
+      -  aws s3 sync build s3://${S3_BUCKET}
+      - aws cloudfront create-invalidation --distribution-id=$PROD_CLOUDFRONT_DIST --paths '/*'
+
+-------
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Installing node packages
+      - n 14.16.1
+      - npm i
+  build:
+    commands:
+      - export REACT_APP_API_URL=${REACT_APP_API_URL}
+      - export REACT_APP_OMNIRETAIN_URL=${REACT_APP_OMNIRETAIN_URL}
+      - export REACT_APP_HYPR_URL=${REACT_APP_HYPR_URL}
+      - export REACT_APP_OMNICHANNEL_ENGINE_URL=${REACT_APP_OMNICHANNEL_ENGINE_URL}
+      - export REACT_APP_SHOPDESK_URL=${REACT_APP_SHOPDESK_URL}
+      - npm run build
+  post_build:
+    commands:
+      -  aws s3 sync dist s3://${S3_BUCKET}
+      - aws cloudfront create-invalidation --distribution-id=$PROD_CLOUDFRONT_DIST --paths '/*'
+
+--------
+Env variables of builds on AWS codebuilds
+
+S3_BUCKET	= xap-copilot-dev/
+
+PROD_CLOUDFRONT_DIST =	EFJB0L2Q8575L
+
+REACT_APP_API_URL =	https://api.copilot-dev-local.xstak.com/
+
+REACT_APP_OMNIRETAIN_URL =	https://api.omniretain-dev-loc.xstak.com/
+
+REACT_APP_HYPR_URL =	https://dev-api-local.hypr.pk
+
+REACT_APP_OMNICHANNEL_ENGINE_URL =	https://oe-unc-dev-local.xstak.com
+
+REACT_APP_SHOPDESK_URL =	https://api.shopdesk-local-dev.xstak.com
+
+--------------------
+S3_BUCKET	        xap-copilot-dev/or/
+PROD_CLOUDFRONT_DIST	EFJB0L2Q8575L
+REACT_APP_API_URL	https://api.omniretain-dev-loc.xstak.com
+

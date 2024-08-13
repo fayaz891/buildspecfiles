@@ -1,0 +1,19 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Installing node packages
+      - n 16.13.2
+      - rm -rf node_modules
+      - yarn cache clean
+      - yarn install
+  build:
+    commands:
+      - echo Build started on `date`
+      - export REACT_APP_BASE_URL=${REACT_APP_BASE_URL}
+      - export REACT_APP_COPILOT_BASE_URL=${REACT_APP_COPILOT_BASE_URL}
+      - yarn run build
+  post_build:
+    commands:
+      - aws s3 sync build s3://${S3_BUCKET}
+      - aws cloudfront create-invalidation --distribution-id=$PROD_CLOUDFRONT_DIST --paths '/*'

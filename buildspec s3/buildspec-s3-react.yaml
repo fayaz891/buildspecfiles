@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Installing node packages
+      - npm i
+  build:
+    commands:
+      - echo Build started on `date`
+      - printf 'REACT_APP_API_BASE_URL=%s' ${REACT_APP_API_BASE_URL}  > .env
+      - npm run build
+  post_build:
+    commands:
+      - aws s3 sync build/ s3://$BUCKET_NAME
+      - echo App deployed on  `date`
+      - echo deployed

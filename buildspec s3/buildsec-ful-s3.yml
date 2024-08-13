@@ -1,0 +1,25 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Installing node packages
+      - npm i
+  build:
+    commands:
+      - echo Build started on `date`
+      - export REACT_APP_BASE_URL=${REACT_APP_BASE_URL}
+      - export REACT_APP_COMPANY_CODE=${REACT_APP_COMPANY_CODE}
+      - export REACT_APP_API_KEY=${REACT_APP_API_KEY}
+      - export REACT_APP_MAPS_API_KEY=${REACT_APP_MAPS_API_KEY}
+      - export REACT_APP_AUTH_DOMAIN=${REACT_APP_AUTH_DOMAIN}
+      - export REACT_APP_DATABASE_URL=${REACT_APP_DATABASE_URL}
+      - export REACT_APP_PROJECT_ID=${REACT_APP_PROJECT_ID}
+      - export REACT_APP_STORAGE_BUCKET=${REACT_APP_STORAGE_BUCKET}
+      - export REACT_APP_MESSANGING_SENDER_ID=${REACT_APP_MESSANGING_SENDER_ID}
+      - export REACT_APP_APP_ID=${REACT_APP_APP_ID}
+      - export REACT_APP_MEASUREMENT_ID=${REACT_APP_MEASUREMENT_ID}
+      - npm run build
+  post_build:
+    commands:
+      -  aws s3 sync build s3://${S3_BUCKET}
+      - aws cloudfront create-invalidation --distribution-id=$PROD_CLOUDFRONT_DIST --paths '/*'
